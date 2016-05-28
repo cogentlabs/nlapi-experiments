@@ -1,0 +1,25 @@
+{
+  "name": "googleapps-ai-demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reactiveai/googleapps-ai-demo.git"
+  },
+  "author": "Reactive Inc",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/reactiveai/googleapps-ai-demo/issues"
+  },
+  "homepage": "https://github.com/reactiveai/googleapps-ai-demo#readme",
+  "dependencies": {
+    "google-auth-library": "^0.9.8",
+    "googleapis": "^7.1.0",
+    "lodash": "^4.13.1",
+    "mkdirp": "^0.5.1",
+    "moment": "^2.13.0",
+    "yargs": "^4.7.1"
+  }
+}
