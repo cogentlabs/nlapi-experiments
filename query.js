@@ -7,13 +7,14 @@ const google = require('googleapis')
 const googleAuth = require('google-auth-library')
 const moment = require('moment')
 
-const argv = require('yargs')
-  .usage('Usage: $0 -c CALENDAR_ID')
+const yargs = require('yargs')
   .example('$0 -t', 'Get an API token')
   .example('$0 -c foo@example.com', 'Fetch all events of foo@example.com')
   .option('t', {
     alias : 'token',
     describe: 'get new token',
+    demand: false,
+    nargs: 0,
     requiresArg: false
   })
   .option('c', {
@@ -21,10 +22,11 @@ const argv = require('yargs')
     describe: 'Calendar ID',
     type: 'string',
     nargs: 1,
+    demand: false,
     requiresArg: true
   })
-  .help('help')
-  .argv
+  .help()
+const argv = yargs.argv
 
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/calendar-nodejs-quickstart.json
@@ -133,6 +135,9 @@ const loadSecret = () => {
 }
 
 
+//
+// Execute
+//
 if(argv.t) {
   loadSecret()
   .then(getNewToken)
@@ -145,3 +150,4 @@ else if(argv.c) {
   .then(saveCalendarEvents)
   .catch(console.error)
 }
+else { yargs.showHelp() }
