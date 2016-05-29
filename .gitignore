@@ -1,4 +1,5 @@
 .DS_Store
 node_modules
 client_secret.json
+.envrc
 data/*
