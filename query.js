@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 'use strict'
 const _ = require('lodash')
-const mkdirp = require('mkdirp')
 const fs = require('fs')
 const readline = require('readline')
 const google = require('googleapis')
@@ -10,13 +9,18 @@ const moment = require('moment')
 
 const argv = require('yargs')
   .usage('Usage: $0 -c CALENDAR_ID')
-  .example('$0 -c rsakai@reactive.co.jp', 'Fetch all events of rsakai@reactive.co.jp')
+  .example('$0 -t', 'Get an API token')
+  .example('$0 -c foo@example.com', 'Fetch all events of foo@example.com')
+  .option('t', {
+    alias : 'token',
+    describe: 'get new token',
+    requiresArg: false
+  })
   .option('c', {
     alias : 'calendar',
     describe: 'Calendar ID',
     type: 'string',
     nargs: 1,
-    demand: true,
     requiresArg: true
   })
   .help('help')
@@ -24,90 +28,97 @@ const argv = require('yargs')
 
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/calendar-nodejs-quickstart.json
-const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
+const SCOPES = [
+  'https://www.googleapis.com/auth/calendar.readonly',
+  'https://www.googleapis.com/auth/drive.metadata.readonly'
+]
 const TOKEN_DIR = `${process.env.HOME || process.env.HOMEPATH ||
-    process.env.USERPROFILE}/.credentials/`
-const TOKEN_PATH = `${TOKEN_DIR}calendar-nodejs-quickstart.json`
+    process.env.USERPROFILE}/.credentials`
+const TOKEN_PATH = `${TOKEN_DIR}/googleapps-ai-demo`
 
 
-const authorize = (credentials, callback) => {
+const getNewToken = (credentials) => {
+  return new Promise((resolve, reject) => {
+    const clientSecret = credentials.installed.client_secret
+    const clientId = credentials.installed.client_id
+    const redirectUrl = credentials.installed.redirect_uris[0]
+    const auth = new googleAuth()
+    const oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl)
+
+    const authUrl = oauth2Client.generateAuthUrl({
+      access_type: 'offline',
+      scope: SCOPES
+    })
+    console.log('Authorize this app by visiting this url: ', authUrl)
+  
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    })
+  
+    rl.question('Enter the code from that page here: ', code => {
+      rl.close()
+      oauth2Client.getToken(code, (err, token) => {
+        if (err) { return reject(err) }
+        resolve(token)
+      })
+    })
+  })
+}
+
+
+const storeToken = (token) => {
+  return new Promise((resolve, reject) => {
+    try { fs.mkdirSync(TOKEN_DIR) }
+    catch (err) {
+      if (err.code != 'EEXIST') { return reject(err) }
+    }
+    fs.writeFile(TOKEN_PATH, JSON.stringify(token), () => {
+      console.log(`Token stored to ${TOKEN_PATH}`)
+      resolve(token)
+    })
+  })
+}
+
+
+const authorize = (credentials) => {
   const clientSecret = credentials.installed.client_secret
   const clientId = credentials.installed.client_id
   const redirectUrl = credentials.installed.redirect_uris[0]
   const auth = new googleAuth()
   const oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl)
 
-  // Check if we have previously stored a token.
-  fs.readFile(TOKEN_PATH, (err, token) => {
-    if (err) {
-      getNewToken(oauth2Client, callback)
-    } else {
-      oauth2Client.credentials = JSON.parse(token)
-      callback(oauth2Client)
-    }
-  })
-}
+  return new Promise((resolve, reject) => {
+    // Check if we have previously stored a token.
+    fs.readFile(TOKEN_PATH, (err, token) => {
+      if (err) { return reject('token cannot be found') } //getNewToken(oauth2Client, callback)
 
-const getNewToken = (oauth2Client, callback) => {
-  const authUrl = oauth2Client.generateAuthUrl({
-    access_type: 'offline',
-    scope: SCOPES
-  })
-  console.log('Authorize this app by visiting this url: ', authUrl)
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-  })
-  rl.question('Enter the code from that page here: ', code => {
-    rl.close()
-    oauth2Client.getToken(code, (err, token) => {
-      if (err) {
-        console.log('Error while trying to retrieve access token', err)
-        return
-      }
-      oauth2Client.credentials = token
-      storeToken(token)
-      callback(oauth2Client)
+      oauth2Client.credentials = JSON.parse(token)
+      resolve(oauth2Client)
     })
   })
 }
 
-const storeToken = (token) => {
-  try {
-    fs.mkdirSync(TOKEN_DIR)
-  } catch (err) {
-    if (err.code != 'EEXIST') {
-      throw err
-    }
-  }
-  fs.writeFile(TOKEN_PATH, JSON.stringify(token))
-  console.log(`Token stored to ${TOKEN_PATH}`)
-}
 
-const listEvents = (auth) => {
-  const calendar = google.calendar('v3')
-  calendar.events.list({
-    auth: auth,
-    calendarId: argv.c,
-    timeMin: moment('2000-01-01').toDate().toISOString(),
-    timeMax: moment().toDate().toISOString(),
-    maxResults: 100000,
-    singleEvents: true,
-    orderBy: 'startTime'
-  }, (err, response) => {
-    if (err) {
-      console.log(`The API returned an error: ${err}`)
-      return
-    }
+const saveCalendarEvents = (auth) => {
+  return new Promise((resolve, reject) => {
+    google.calendar('v3').events.list({
+      auth: auth,
+      calendarId: argv.c,
+      timeMin: moment('2000-01-01').toDate().toISOString(),
+      timeMax: moment().toDate().toISOString(),
+      maxResults: 100000,
+      singleEvents: true,
+      orderBy: 'startTime'
+    }, (err, response) => {
+      if (err) { return reject(err) }
 
-    const dataDir = `data/calendar/${argv.c}`
-    mkdirp.sync(dataDir)
+      _.each(response.items, (event) => {
+        fs.writeFile(`data/calendar/${event.id}.json`, JSON.stringify(event, null, 2))
+      })
+      console.log(`${response.items.length} calendar events saved`)
 
-    _.each(response.items, (event) => {
-      fs.writeFile(`${dataDir}/${event.id}.json`,
-                   JSON.stringify(event, null, 2))
-      const start = event.start.dateTime || event.start.date
-      console.log('%s - %s', start, event.summary)
+      resolve(response.items)
     })
   })
 }
@@ -116,15 +127,21 @@ const loadSecret = () => {
   return new Promise((resolve, reject) => {
     fs.readFile('client_secret.json', (err, content) => {
       if(err) { return reject(`Error loading client secret file: ${err}`) }
-      resolve(content)
+      resolve(JSON.parse(content))
     })
   })
 }
 
-loadSecret()
-.then((secret) => {
-  authorize(JSON.parse(secret), listEvents)
-})
-.catch(console.error)
 
-
+if(argv.t) {
+  loadSecret()
+  .then(getNewToken)
+  .then(storeToken)
+  .catch(console.error)
+}
+else if(argv.c) {
+  loadSecret()
+  .then(authorize)
+  .then(saveCalendarEvents)
+  .catch(console.error)
+}
