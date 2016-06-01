@@ -15,10 +15,12 @@
   },
   "homepage": "https://github.com/reactiveai/googleapps-ai-demo#readme",
   "dependencies": {
+    "axios": "^0.11.1",
+    "fs-promise": "^0.5.0",
+    "glob-fs": "^0.1.6",
     "google-auth-library": "^0.9.8",
     "googleapis": "^7.1.0",
     "lodash": "^4.13.1",
-    "mkdirp": "^0.5.1",
     "moment": "^2.13.0",
     "yargs": "^4.7.1"
   }
