@@ -2,4 +2,4 @@
 node_modules
 client_secret.json
 .envrc
-data/*
+knowledge-finder/data/*
