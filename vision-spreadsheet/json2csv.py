@@ -1,17 +1,22 @@
-#!/usr/bin/python3
+#!/usr/bin/python2
+import codecs
+import sys
 import json
-import os
+import os.path
 from glob import glob
-from sys import argv, exit
 
-if len(argv) < 2:
-    print('usage: python3 %s dir' % argv[0])
-    exit()
+if len(sys.argv) < 2:
+    print('usage: python3 %s dir' % sys.argv[0])
+    sys.exit()
+
+# For dealing with unicode printing problems in python2
+UTF8Writer = codecs.getwriter('utf8')
+sys.stdout = UTF8Writer(sys.stdout)
 
 # Number of labels to keep
 TOP_N = 10
 
-for root, dirs, files in os.walk(argv[1]):
+for root, dirs, files in os.walk(sys.argv[1]):
     for file in files:
         if not file.endswith(".json"):
             continue
