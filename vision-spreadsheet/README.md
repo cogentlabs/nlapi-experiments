@@ -2,12 +2,15 @@
 
 ##Create CSV of Vision API data
 
-Use `json2csv.py` to convert a directory of Vision API JSON into one CSV
-containing the top 10 annotations for each image with corresponding
-probabilities.
+Use `json2csv.py` with a cluster definition JSON to convert a directory of
+Vision API JSON into one CSV containing the following:
+
+1. Most common image labels (counts of most likely label for each image in cluster)
+2. Most common colors (based on sum of scores across all images in cluster)
+3. Number of faces in all images in the cluster
 
 ```
-python2 json2csv img_json/ > my_images.csv
+python2 json2csv cluster_json_file img_json_dir/ > my_images.csv
 ```
 
 ##Upload to Google Drive
