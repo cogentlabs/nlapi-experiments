@@ -1,0 +1,2 @@
+
+GLOVE_WORD2VEC_FILENAME = 'data/glove.6B.300d.MINI.txt'
