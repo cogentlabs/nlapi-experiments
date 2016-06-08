@@ -44,12 +44,12 @@ for root, dirs, files in os.walk(sys.argv[2]):
 
         # Extract most likely label
         if 'labelAnnotations' in data:
-            label = data['labelAnnotations'][0]['description']
-
-            if label in cluster_labels[cluster]:
-                cluster_labels[cluster][label] += 1
-            else:
-                cluster_labels[cluster][label] = 1
+            labels = data['labelAnnotations']
+            for l in labels:
+                if l['description'] in cluster_labels[cluster]:
+                    cluster_labels[cluster][l['description']] += l['score']
+                else:
+                    cluster_labels[cluster][l['description']] = l['score']
 
         # Extract colors
         if 'imagePropertiesAnnotation' in data and 'dominantColors' in data['imagePropertiesAnnotation']:
@@ -70,18 +70,47 @@ for root, dirs, files in os.walk(sys.argv[2]):
 
 
 # Header line
-print ','.join(['Cluster ID', 'Cluster Name'] + \
-               [ 'Label %d,Label Count %d' % (i,i) for i in range(1,11) ] + \
-               [ 'Color %d,Color Count %d' % (i,i) for i in range(1,11) ] + \
-               ['Number of Faces'])
+#print ','.join(['Cluster ID', 'Cluster Name'] + \
+#               [ 'Label %d,Label Count %d' % (i,i) for i in range(1,11) ] + \
+#               [ 'Color %d,Color Count %d' % (i,i) for i in range(1,11) ] + \
+#               ['Number of Faces'])
 
 # Print top N labels, top N colors, and number of faces for each cluster
+rows = []
 for c in range(len(cluster_names)):
-    top_labels = sum(sorted(cluster_labels[c].items(), key=lambda x: x[1])[-TOP_N:][::-1], ())
-    top_colors = sum(sorted(cluster_colors[c].items(), key=lambda x: x[1])[-TOP_N:][::-1], ())
-    num_faces  = cluster_faces[c]
+    top_labels = sorted(cluster_labels[c].items(), key=lambda x: x[1], reverse=True)
+    top_labels = top_labels[:TOP_N] + \
+                 [('other', sum([ x[1] for x in top_labels[TOP_N:] ]) )]
 
-    print ','.join([ '%d' % c, cluster_names[c]] + \
-                   [ '%d' % x if type(x)==int else x for x in top_labels] + \
-                   [ '%f' % x if type(x)==float else x for x in top_colors] + \
-                   [ '%d' % num_faces])
+    top_colors = sorted(cluster_colors[c].items(), key=lambda x: x[1], reverse=True)
+    top_colors = top_colors[:TOP_N] + \
+                 [('other', sum([ x[1] for x in top_colors[TOP_N:] ]) )]
+
+    rows.append(top_labels + top_colors)
+
+# Dealing with python printing nonsense
+def safe_print(s):
+    if type(s) == int:
+        fstr = '%d'
+    elif type(s) == float:
+        fstr = '%f'
+    else:
+        fstr = '%s'
+    return fstr % s
+
+# Use zip(*) to transpose, i.e. make the rows into columns
+# This results in the following:
+#
+#    cluster1_____ cluster2_____ ... clusterN_____
+#    label1 count1 label1 count1 ... label1 count1
+#    label2 count2 label2 count2 ... label2 count2
+#    ...     ...   ...    ...    ... ...    ...
+#    labelN countN labelN countN ... labelN countN
+#    other  count  other  count  ... other  count
+#    color1 count1 color1 count1 ... color1 count1
+#    color2 count2 color2 count2 ... color2 count2
+#    ...     ...   ...    ...    ... ...    ...
+#    colorN countN colorN countN ... colorN countN
+#
+for col in zip(*[r for r in rows]):
+    print ','.join( safe_print(s) for s in sum(col, ()) )
