@@ -27,6 +27,9 @@ DOCUMENTS_DICTIONARY = {'document': Extensions.DOCUMENT,
                         'workbook': Extensions.SPREAD_SHEET,
                         'spreadsheet': Extensions.SPREAD_SHEET}
 
+SEND_SYNONYM = ['send, ''address', 'assign', 'deliver', 'dispatch',
+                'forward', 'issue', 'compose', 'communicate', 'ship']
+
 vars = {k: v for k, v in locals().iteritems() if '__' not in k and 'pdb' not in k and k.isupper()}
 
 print('__________ Constants __________')

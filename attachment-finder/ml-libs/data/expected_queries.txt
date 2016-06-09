@@ -10,4 +10,6 @@ to:joe label:assignment has:attachment
 label:farfetch label:presentation has:attachment
 label:ubs label:deck has:attachment
 from:mike label:machine-learning-event has:attachment
-to:google label:document newer_than:1d has:attachment
+to:google newer_than:1d has:attachment
+to:google newer_than:2d has:attachment
+to:google newer_than:2d has:attachment

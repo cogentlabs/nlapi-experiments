@@ -7,22 +7,27 @@ import numpy as np
 from PyDictionary import PyDictionary
 
 import constants as c
+import logic
 import utils.nl_api as nl
-
-
-def build_query(nl_api_elt):
-    return "has:attachment"
 
 
 def validate_query(actual, expected):
     precision_list = []
-    for predicted_chunk in expected.split():
-        precision_list.append(predicted_chunk in actual)
-    precision = 0
-    if len(precision_list) != 0:
-        precision = np.mean(precision_list)
-    print('PRED = {}, EXPECTED = {}, PRECISION = {}'.format(actual, expected, precision))
-    return precision
+    for expected_chunk in expected.split():
+        precision_list.append(expected_chunk in actual)
+
+    # penalize it when we go wrong.
+    penalizer_list = []
+    for predicted_chunk in actual.split():
+        penalizer_list.append(predicted_chunk not in expected)
+
+    precision = np.mean(precision_list)
+    penalizer = np.mean(penalizer_list)
+    accuracy = precision - penalizer
+    if accuracy < 0:
+        accuracy = 0
+    print('PRED = {}, EXPECTED = {}, ACC = {}'.format(actual, expected, accuracy))
+    return accuracy
 
 
 if __name__ == '__main__':
@@ -56,7 +61,9 @@ if __name__ == '__main__':
 
     precisions = []
     for i, nl_api_element in enumerate(nl_api_elements):
-        print('Sentence : {}'.format(nl_api_element['sentences'][0]['text']['content']))
-        predicted_query = build_query(nl_api_element)
+        print('______________________')
+        print('Sentence = {}'.format(nl_api_element['sentences'][0]['text']['content']))
+        predicted_query = logic.build_query(nl_api_element)
         precisions.append(validate_query(predicted_query, queries[i]))
+
     print('\n______________________\nFINAL PRECISION IS {}'.format(np.mean(precisions)))
