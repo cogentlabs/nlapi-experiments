@@ -4,19 +4,8 @@ import React from 'react'
 import EventEmitterMixin from 'react-event-emitter-mixin'
 import SearchResultItem from './SearchResultItem'
 
-const GMAIL_API_ENDPOINT = 'https://www.googleapis.com/gmail/v1/users'
+import {getToken, GMAIL_API_ENDPOINT} from '../common_utils'
 const GMAIL_MAX_RESULT = 100
-
-const getToken = () => {
-  return new Promise((resolve, reject) => {
-    chrome.identity.getAuthToken({interactive: false}, (token) => {
-      if(chrome.runtime.lastError) {
-        return reject(chrome.runtime.lastError)
-      }
-      resolve(token)
-    })
-  })
-}
 
 const gmailMessageList = () => {
   return new Promise((resolve, reject) => {

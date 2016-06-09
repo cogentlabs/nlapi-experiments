@@ -1,7 +1,11 @@
 import _ from 'lodash'
 import moment from 'moment'
+import numeral from 'numeral'
+import axios from 'axios'
 import React from 'react'
 import EventEmitterMixin from 'react-event-emitter-mixin'
+
+import {getToken, GMAIL_API_ENDPOINT} from '../common_utils'
 
 import SUPPORTED_MIME_TYPES from '../mime_filter'
 
@@ -22,15 +26,44 @@ module.exports = React.createClass({
 
   getInitialState() {
     const {id, internalDate, payload, snippet} = this.props.message
-    const subject = _.find(payload.headers, {name: 'Subject'}).value
 
     return {
       id,
-      timestamp: moment(parseInt(internalDate)).format('llll'),
-      subject,
       payload,
-      snippet
+      snippet,
+      time: moment(parseInt(internalDate)).fromNow(),
+      subject: _.find(payload.headers, {name: 'Subject'}).value,
+      from: _.find(payload.headers, {name: 'From'}).value,
+      to: _.find(payload.headers, {name: 'To'}).value
     }
+  },
+
+  downloadAttachment(part) {
+    getToken()
+    .then((token) => {
+      return axios.get(`${GMAIL_API_ENDPOINT}/me/messages/${this.state.id}/attachments/${part.body.attachmentId}`, {
+        params: {
+          access_token: token
+        }
+      })
+    })
+    .then((res) => {
+      // Gmail API returns broken(?) base64 string
+      const data = res.data.data.replace(/-/g, '+').replace(/_/g, '/')
+      const byteString = atob(data)
+      const ab = new ArrayBuffer(byteString.length)
+      const ia = new Uint8Array(ab)
+      for(let i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i)
+      }
+      const blob = new Blob([ia], {type: part.mimeType})
+
+      const tempLink = document.createElement('a')
+      tempLink.href = window.URL.createObjectURL(blob)
+      tempLink.setAttribute('download', part.filename)
+      tempLink.click()
+    })
+    .catch(console.error)
   },
 
   buildCards() {
@@ -45,12 +78,14 @@ module.exports = React.createClass({
             <h2 className="mdl-card__title-text">{part.filename}</h2>
           </div>
           <div className="mdl-card__supporting-text">
-            {this.state.timestamp}
+            From : {this.state.from}<br />
+            To : {this.state.to}<br />
+            Date : {this.state.time}<br />
+            Size : {numeral(part.body.size).format('0 b')}
           </div>
           <div className="mdl-card__actions mdl-card--border">
-            <a className="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
-              Open File
-            </a>
+            <a className="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
+               onClick={() => this.downloadAttachment(part)}>Download File</a>
           </div>
         </div>
       )
