@@ -18,7 +18,7 @@ def build_query(nl_api_elt):
 def keywords_to_label(nl_api_elt, res):
     for token in nl_api_elt['tokens']:
         if token['lemma'] in c.KEYWORDS:
-            res += build('label', token['lemma'])
+            res += build(None, token['lemma'])
     return res
 
 
@@ -30,9 +30,9 @@ def pobj_to_label(nl_api_elt, res):
             entity_name = entity['name'].lower()
             entities_list.append(entity_name)
     for token in nl_api_elt['tokens']:
-        if token['partOfSpeech']['tag'] == 'NOUN' and token['dependencyEdge']['label'] == 'POBJ':
+        if token['partOfSpeech']['tag'] == 'NOUN' and token['dependencyEdge'][None] == 'POBJ':
             if token['lemma'] not in entities_list:
-                res += build('label', token['lemma'])
+                res += build(None, token['lemma'])
     return res
 
 
@@ -99,16 +99,16 @@ def filter_entities_already_indexed_by_to_from(nl_api_elt, res):
         if entity['salience'] > 0.1:
             entity_name = entity['name'].lower()
 
-            if build('to', entity_name) in res and build('label', entity_name) in res:
-                res = res.replace(build('label', entity_name), '')
+            if build('to', entity_name) in res and build(None, entity_name) in res:
+                res = res.replace(build(None, entity_name), '')
 
-            if build('from', entity_name) in res and build('label', entity_name) in res:
-                res = res.replace(build('label', entity_name), '')
+            if build('from', entity_name) in res and build(None, entity_name) in res:
+                res = res.replace(build(None, entity_name), '')
     return res
 
 
 def layer_entities(nl_api_elt, res):
-    tag = 'label'
+    tag = None
     for entity in nl_api_elt['entities']:
         if entity['salience'] > 0.1:  # and entity['type'] != u'PERSON':
             val = entity['name'].lower()
@@ -148,4 +148,6 @@ def layer_link_entities_to_from(nl_api_elt, res):
 
 
 def build(tag, val):
+    if tag is None: # KEYWORD
+        return ' {}'.format(val.replace(' ', '-'))
     return ' {}:{}'.format(tag, val.replace(' ', '-'))
