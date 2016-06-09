@@ -28,4 +28,6 @@ def reverse_directed_graph(nl_api_json):
     for k, v in directed_graph.iteritems():
         reverse_graph[v] = reverse_graph.get(v, [])
         reverse_graph[v].append(k)
+
+    reverse_graph[root_index].remove(root_index)
     return {'reverse_directed_graph': reverse_graph, 'ROOT': root_index}

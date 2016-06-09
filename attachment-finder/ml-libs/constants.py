@@ -27,8 +27,21 @@ DOCUMENTS_DICTIONARY = {'document': Extensions.DOCUMENT,
                         'workbook': Extensions.SPREAD_SHEET,
                         'spreadsheet': Extensions.SPREAD_SHEET}
 
-SEND_SYNONYM = ['send, ''address', 'assign', 'deliver', 'dispatch',
-                'forward', 'issue', 'compose', 'communicate', 'ship']
+SEND_SYNONYMS = ['send', 'address', 'assign', 'deliver', 'dispatch',
+                 'forward', 'issue', 'compose', 'communicate', 'ship']
+
+DIGITS = {'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5, 'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10}
+TIME_UNIT = {'day': 1, 'week': 7, 'month': 31}
+
+KEYWORDS = set()
+_KEYWORDS_AS_LABEL = ['resume', 'cv', 'report', 'audio', 'notes', 'paper', 'catalog', 'journal', 'cover',
+                      'letter' 'recipe', 'menu', 'calendar', 'newsletter', 'list', 'todo', 'budget', 'schedule',
+                      'organizer', 'sheet', 'invoice', 'tracker', 'planner', 'log', 'keynote', 'proposal', 'deck',
+                      'design', 'roadmap']
+for doc in DOCUMENTS_DICTIONARY.keys():
+    KEYWORDS.add(doc)
+for doc in _KEYWORDS_AS_LABEL:
+    KEYWORDS.add(doc)
 
 vars = {k: v for k, v in locals().iteritems() if '__' not in k and 'pdb' not in k and k.isupper()}
 
