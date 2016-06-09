@@ -43,3 +43,15 @@ def create_vector(word, word2vec, word_vector_size, silent=False):
     if not silent:
         print('{} is missing'.format(word))
     return vector
+
+
+def l2_dist(v1, v2):
+    return np.sqrt(np.sum(np.array(v1 - v2) ** 2))
+
+
+def dist_distribution(inp, w2v):
+    dists = np.zeros(len(w2v))
+    for i, key in enumerate(w2v):
+        dists[i] = l2_dist(inp, w2v[key])
+        # print('{} {}'.format(key, dists[i]))
+    return dists

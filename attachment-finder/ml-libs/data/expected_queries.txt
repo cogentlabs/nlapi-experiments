@@ -1,0 +1,13 @@
+label:dnp label:jorta label:design from:jorta has:attachment
+label:resume label:nick-janssen has:attachment
+to:google has:attachment
+to:jp-morgan has:attachment label:document
+to:farfetch has:attachment label:proposal
+from:philippe-remy label:report has:attachment
+label:roadmap label:dnp has:attachment
+label:research-engineer-role has:attachment
+to:joe label:assignment has:attachment
+label:farfetch label:presentation has:attachment
+label:ubs label:deck has:attachment
+from:mike label:machine-learning-event has:attachment
+to:google label:document newer_than:1d has:attachment
