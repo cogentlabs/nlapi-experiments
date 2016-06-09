@@ -10,6 +10,9 @@ if len(sys.argv) < 2:
 # Top N labels and colors to keep for each cluster
 TOP_N = 10
 
+# Max number of rows (API has limits...)
+MAX_LINES = 10000
+
 # For dealing with unicode printing problems in python2
 UTF8Writer = codecs.getwriter('utf8')
 sys.stdout = UTF8Writer(sys.stdout)
@@ -27,7 +30,9 @@ print ','.join(['Image ID'] + \
                [ 'Color %d,Color Score %d' % (i,i) for i in range(1,TOP_N+1) ])
 
 # Extract and reformat each image
-for img in vision:
+for (n,img) in enumerate(vision):
+
+    if n >= MAX_LINES: break
 
     num_faces, labels, colors = 0, [], []
 
