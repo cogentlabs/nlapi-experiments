@@ -37,6 +37,8 @@ def pobj_to_label(nl_api_elt, res):
 
 
 def layer_send_keyword(nl_api_elt, res):
+    res_before = res
+
     entities_list = []
     for entity in nl_api_elt['entities']:
         if entity['salience'] > 0.1:
@@ -58,12 +60,17 @@ def layer_send_keyword(nl_api_elt, res):
                 if operands[0] < send_index:
                     # This is the sender.
                     sender = nl_api_elt['tokens'][operands[0]]['lemma'].lower()
+                    sender_is_valid = False
                     if sender == 'I'.lower():
                         sender = 'me'
+                        sender_is_valid = True
                     for entity in entities_list:
                         if sender in entity:
                             sender = str(entity)
-                    res += build('from', sender.lower())
+                            sender_is_valid = True
+                            break
+                    if sender_is_valid:
+                        res += build('from', sender.lower())
             if len(operands) >= 2:
                 if operands[1] > send_index:
                     # could be the TO particle.
@@ -75,6 +82,13 @@ def layer_send_keyword(nl_api_elt, res):
         except Exception, e:
             print(str(e))
 
+    if send_index is not None:
+        sentence = nl_api_elt['sentences'][0]['text']['content'].lower()
+        if res_before == res:  # no modifications
+            send_raw_text = nl_api_elt['tokens'][send_index]['text']['content']
+            for entity in entities_list:
+                if '{} {}'.format(send_raw_text, entity) in sentence:
+                    res += build('to', entity.lower())
     return res
 
 
@@ -148,6 +162,6 @@ def layer_link_entities_to_from(nl_api_elt, res):
 
 
 def build(tag, val):
-    if tag is None: # KEYWORD
+    if tag is None:  # KEYWORD
         return ' {}'.format(val.replace(' ', '-'))
     return ' {}:{}'.format(tag, val.replace(' ', '-'))

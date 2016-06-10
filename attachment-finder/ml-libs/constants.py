@@ -37,7 +37,7 @@ KEYWORDS = set()
 _KEYWORDS_AS_LABEL = ['resume', 'cv', 'report', 'audio', 'notes', 'paper', 'catalog', 'journal', 'cover',
                       'letter' 'recipe', 'menu', 'calendar', 'newsletter', 'list', 'todo', 'budget', 'schedule',
                       'organizer', 'sheet', 'invoice', 'tracker', 'planner', 'log', 'keynote', 'proposal', 'deck',
-                      'design', 'roadmap']
+                      'design', 'roadmap', 'slide', 'event']
 for doc in DOCUMENTS_DICTIONARY.keys():
     KEYWORDS.add(doc)
 for doc in _KEYWORDS_AS_LABEL:
