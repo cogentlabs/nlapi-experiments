@@ -105,6 +105,22 @@ def temporal_keywords(nl_api_elt, res):
             if str_to_find in sentence or str_to_find2 in sentence:
                 time_index = c.DIGITS[digit] * c.TIME_UNIT[time_unit]
                 res += build('newer_than', '{}d'.format(time_index))
+                return res
+
+    for time_unit in c.TIME_UNIT.keys():
+        if 'last {}'.format(time_unit) in sentence:
+            time_index = c.TIME_UNIT[time_unit]
+            res += build('newer_than', '{}d'.format(time_index))
+            return res
+
+    # default.
+    # last night, early morning, late morning, early afternoon and so on
+    day_keywords = ['night', 'afternoon', 'morning', 'evening']
+    for keyword in day_keywords:
+        if keyword in sentence:
+            res += build('newer_than', '1d')
+            return res
+
     return res
 
 
@@ -163,5 +179,5 @@ def layer_link_entities_to_from(nl_api_elt, res):
 
 def build(tag, val):
     if tag is None:  # KEYWORD
-        return ' {}'.format(val.replace(' ', '-'))
+        return ' {}'.format(val)
     return ' {}:{}'.format(tag, val.replace(' ', '-'))

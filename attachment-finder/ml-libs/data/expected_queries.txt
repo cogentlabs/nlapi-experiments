@@ -1,17 +1,29 @@
 dnp jorta design from:jorta has:attachment sheet
-resume nick-janssen has:attachment
+resume nick janssen has:attachment
 to:google has:attachment from:me
 to:jp-morgan has:attachment document from:me
 to:farfetch has:attachment proposal from:me
 from:philippe-remy report has:attachment to:me
 roadmap dnp has:attachment
-research-engineer-role has:attachment
+research-engineer-role has:attachment assignment
 to:joe assignment has:attachment from:me
 presentation has:attachment from:me farfetch
 ubs deck has:attachment
-from:mike machine-learning-event has:attachment to:me event
+from:mike machine-learning-event has:attachment to:me event photo
 to:google newer_than:1d has:attachment from:me document
 to:google newer_than:2d has:attachment from:me document
 to:google newer_than:2d has:attachment from:me document
 to:james has:attachment slide
 has:attachment to:james
+has:attachment to:martin from:me newer_than:7d
+has:attachment spreadsheet
+has:attachment from:ray to:me newer_than:1d photo
+has:attachment from:fred to:me statement
+has:attachment to:joe newer_than:7d from:me
+has:attachment resume nick janssen
+has:attachment to:google from:me
+farfetch has:attachment from:me presentation
+has:attachment from:ray to:me newer_than:1d
+has:attachment to:joe from:me newer_than:7d
+has:attachment to:google newer_than:1d archive
+has:attachment to:google newer_than:35d archive

@@ -28,16 +28,16 @@ DOCUMENTS_DICTIONARY = {'document': Extensions.DOCUMENT,
                         'spreadsheet': Extensions.SPREAD_SHEET}
 
 SEND_SYNONYMS = ['send', 'address', 'assign', 'deliver', 'dispatch',
-                 'forward', 'issue', 'compose', 'communicate', 'ship']
+                 'forward', 'issue', 'compose', 'communicate', 'ship', 'make']
 
-DIGITS = {'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5, 'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10}
+DIGITS = {'few': 5, 'a': 1, 'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5, 'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10}
 TIME_UNIT = {'day': 1, 'week': 7, 'month': 31}
 
 KEYWORDS = set()
 _KEYWORDS_AS_LABEL = ['resume', 'cv', 'report', 'audio', 'notes', 'paper', 'catalog', 'journal', 'cover',
                       'letter' 'recipe', 'menu', 'calendar', 'newsletter', 'list', 'todo', 'budget', 'schedule',
                       'organizer', 'sheet', 'invoice', 'tracker', 'planner', 'log', 'keynote', 'proposal', 'deck',
-                      'design', 'roadmap', 'slide', 'event']
+                      'design', 'roadmap', 'slide', 'event', 'photo', 'statement', 'assignment', 'record', 'archive']
 for doc in DOCUMENTS_DICTIONARY.keys():
     KEYWORDS.add(doc)
 for doc in _KEYWORDS_AS_LABEL:
