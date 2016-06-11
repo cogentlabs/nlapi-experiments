@@ -23,7 +23,7 @@ const gmailMessageList = (query) => {
     .then((token) => {
       return axios.get(`${GMAIL_API_ENDPOINT}/me/messages`, {
         params: {
-          q: '"has:attachment"',
+          q: query,
           access_token: token,
           maxResults: GMAIL_MAX_RESULT
         }
@@ -67,13 +67,11 @@ module.exports = React.createClass({
 
   componentWillMount() {
     this.eventEmitter('on', 'recognitionFinished', (text) => {
-      // convertNL2Query(text)
-      // .then((query) => {
-      //   console.log(query)
-      // })
-      // .catch(console.error)
-
-      gmailMessageList()
+      convertNL2Query(text)
+      .then((res) => {
+        console.log(res)
+        return gmailMessageList(res.query)
+      })
       .then((messageList) => {
         const messagePromises = messageList.messages.map((message) => getMessage(message.id))
         Promise.all(messagePromises).then((messages) => { this.setState({messages}) })

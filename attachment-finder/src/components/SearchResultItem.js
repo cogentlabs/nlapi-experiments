@@ -11,25 +11,51 @@ import SUPPORTED_MIME_TYPES from '../mime_filter'
 
 const style = {
   card: {
+    display: 'flex',
     color: '#4a4a4a',
     backgroundColor: '#f5f5f5',
-    marginLeft: 40,
-    marginRight: 40,
-    marginBottom: 30
+    margin: '0px 40px 30px 40px',
+    padding: '10px 0'
+  },
+
+  iconBox: {
+    padding: "43px 30px"
+  },
+
+  icon: {
+    width: 70,
+    height: 88
+  },
+
+  infoBox: {
+    flex: 1,
+  },
+
+  downloadBox: {
+    width: 120
   },
 
   filename: {
+    width: 472,
     color: '#4a4a4a',
     fontSize: 18,
-    fontWeight: 500
+    fontWeight: 'bold',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    paddingTop: 20,
+    paddingBottom: 7
   },
 
   metadata: {
+    borderTop: 'solid 0.5px #e0e0e0',
+    width: 472,
     color: '#4a4a4a',
     fontSize: 14,
     whiteSpace: 'nowrap',
     overflow: 'hidden',
-    textOverflow: 'ellipsis'
+    textOverflow: 'ellipsis',
+    padding: '10px 0 7px 0'
   }
 }
 
@@ -98,15 +124,17 @@ module.exports = React.createClass({
 
       return (
         <div key={part.body.attachmentId} style={style.card}>
-          <img src={iconPath} />
-          <div style={style.filename}>{part.filename}</div>
-          <div>
-            <div style={style.metadata}>From : {this.state.from}</div>
-            <div style={style.metadata}>To : {this.state.to}</div>
-            <div style={style.metadata}>Date : {this.state.time}</div>
-            <div style={style.metadata}>Size : {numeral(part.body.size).format('0 b')}</div>
+          <div style={style.iconBox}><img style={style.icon} src={iconPath} /></div>
+          <div style={style.infoBox}>
+            <div style={style.filename}>{part.filename}</div>
+            <div>
+              <div style={style.metadata}>From : {this.state.from}</div>
+              <div style={style.metadata}>To : {this.state.to}</div>
+              <div style={style.metadata}>Date : {this.state.time}</div>
+              <div style={style.metadata}>Size : {numeral(part.body.size).format('0 b')}</div>
+            </div>
           </div>
-          <div>
+          <div style={style.downloadBox}>
             <a onClick={() => this.downloadAttachment(part)}>Download File</a>
           </div>
         </div>

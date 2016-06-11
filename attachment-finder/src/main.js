@@ -10,8 +10,7 @@ import SearchResult from './components/SearchResult'
 
 const style = {
   rootWrapper: {
-    padding: 10,
-    width: 800
+    fontFamily: '"Roboto", sans-serif'
   }
 }
 

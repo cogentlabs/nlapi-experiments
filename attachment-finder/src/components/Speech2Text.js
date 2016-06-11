@@ -8,10 +8,12 @@ const RECOGNITION_FINISHED = 'Recognized'
 const style = {
   root: {
     // height: 100,
+    width: 800,
     paddingTop: 31,
     color: '#ffffff',
     backgroundColor: '#4185ff',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    marginBottom: 20
   },
   wave: {
     height: 43,
@@ -73,9 +75,8 @@ module.exports = React.createClass({
   componentDidMount() {
     this.recognition = this.initRecognition()
     // this.recognition.start()
-    this.eventEmitter('emit', 'recognitionFinished', 'document sent to ray') // dummy
+    this.eventEmitter('emit', 'recognitionFinished', 'document sent to ray three weeks ago') // dummy
   },
-
 
   render() {
     const displayText = this.state.text || this.state.recognitionState

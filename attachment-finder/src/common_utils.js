@@ -38,8 +38,8 @@ const MIME_CATEGORIES = {
 }
 
 module.exports = {
-  // QUERY_CONV_URL: 'http://gmail-query-builder.reactive.ai/',
-  QUERY_CONV_URL: 'http://localhost:5000',
+  QUERY_CONV_URL: 'http://gmail-query-builder.reactive.ai/',
+  // QUERY_CONV_URL: 'http://localhost:5000',
   GMAIL_API_ENDPOINT: 'https://www.googleapis.com/gmail/v1/users',
 
   getToken(interactive=false) {
