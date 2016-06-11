@@ -10,6 +10,10 @@ import {getToken, GMAIL_API_ENDPOINT, getIconByMimeType} from '../common_utils'
 import SUPPORTED_MIME_TYPES from '../mime_filter'
 
 const style = {
+  root: {
+    marginTop: 20
+  },
+
   card: {
     display: 'flex',
     color: '#4a4a4a',
@@ -32,7 +36,13 @@ const style = {
   },
 
   downloadBox: {
-    width: 120
+    padding: '65px 36px 0 36px'
+  },
+
+  downloadIcon: {
+    width: 55,
+    height: 55,
+    cursor: 'pointer'
   },
 
   filename: {
@@ -135,7 +145,9 @@ module.exports = React.createClass({
             </div>
           </div>
           <div style={style.downloadBox}>
-            <a onClick={() => this.downloadAttachment(part)}>Download File</a>
+            <img src='images/11_download.png'
+                 style={style.downloadIcon}
+                 onClick={() => this.downloadAttachment(part)} />
           </div>
         </div>
       )
@@ -143,7 +155,7 @@ module.exports = React.createClass({
   },
 
   render() {
-    return <div>
+    return <div style={style.root}>
       {this.buildCards()}
     </div>
   }

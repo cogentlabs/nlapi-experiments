@@ -1,29 +1,36 @@
 import React from 'react'
 import EventEmitterMixin from 'react-event-emitter-mixin'
 
-const RECOGNITION_STARTED = 'Listening'
+const RECOGNITION_STARTED = 'Listening...'
 const RECOGNITION_FAILED = 'Failed. Retrying now'
 const RECOGNITION_FINISHED = 'Recognized'
 
 const style = {
   root: {
-    // height: 100,
     width: 800,
-    paddingTop: 31,
+    padding: '30px 0',
     color: '#ffffff',
     backgroundColor: '#4185ff',
     fontWeight: 'bold',
-    marginBottom: 20
+    display: 'flex'
   },
+
+  textBox: {
+    fontSize: 28,
+    fontWeight: 500,
+    lineHeight: 1.25,
+    flex: 1,
+    marginTop: 5
+  },
+
+  imageBox: {
+    width: 170
+  },
+
   wave: {
     height: 43,
     marginLeft: 42,
     marginRight: 42,
-  },
-  text: {
-    fontSize: 28,
-    fontWeight: 500,
-    lineHeight: 1.25
   }
 }
 
@@ -74,8 +81,8 @@ module.exports = React.createClass({
 
   componentDidMount() {
     this.recognition = this.initRecognition()
-    // this.recognition.start()
-    this.eventEmitter('emit', 'recognitionFinished', 'document sent to ray three weeks ago') // dummy
+    this.recognition.start()
+    // this.eventEmitter('emit', 'recognitionFinished', 'document sent to ray three weeks ago') // dummy
   },
 
   render() {
@@ -83,8 +90,8 @@ module.exports = React.createClass({
 
     return (
       <div style={style.root}>
-        <img style={style.wave} src='images/0_speech.png' />
-        <span style={style.text}>{displayText}</span>
+        <div style={style.imageBox}><img style={style.wave} src='images/0_speech.png' /></div>
+        <div style={style.textBox}>{displayText}</div>
       </div>
     )
   }

@@ -3,6 +3,7 @@ import axios from 'axios'
 import React from 'react'
 import EventEmitterMixin from 'react-event-emitter-mixin'
 import SearchResultItem from './SearchResultItem'
+import NoResult from './NoResult'
 
 import {getToken, GMAIL_API_ENDPOINT, QUERY_CONV_URL} from '../common_utils'
 const GMAIL_MAX_RESULT = 100
@@ -73,6 +74,12 @@ module.exports = React.createClass({
         return gmailMessageList(res.query)
       })
       .then((messageList) => {
+        console.log(messageList)
+        if(messageList.resultSizeEstimate == 0) {
+          this.setState({messages: null})
+          return
+        }
+
         const messagePromises = messageList.messages.map((message) => getMessage(message.id))
         Promise.all(messagePromises).then((messages) => { this.setState({messages}) })
       })
@@ -81,8 +88,7 @@ module.exports = React.createClass({
   },
 
   render() {
-    return <div>
-      {this.searchResultItems()}
-    </div>
+    if(_.isNull(this.state.messages)) { return <NoResult /> }
+    return <div>{this.searchResultItems()}</div>
   }
 })
