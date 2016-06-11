@@ -95,7 +95,7 @@ module.exports = React.createClass({
     }
   },
 
-  downloadAttachment(part) {
+  showAttachment(part) {
     getToken()
     .then((token) => {
       return axios.get(`${GMAIL_API_ENDPOINT}/me/messages/${this.state.id}/attachments/${part.body.attachmentId}`, {
@@ -107,6 +107,8 @@ module.exports = React.createClass({
     .then((res) => {
       // Gmail API returns broken(?) base64 string
       const data = res.data.data.replace(/-/g, '+').replace(/_/g, '/')
+
+      /*
       const byteString = atob(data)
       const ab = new ArrayBuffer(byteString.length)
       const ia = new Uint8Array(ab)
@@ -119,6 +121,12 @@ module.exports = React.createClass({
       const tempLink = document.createElement('a')
       tempLink.href = window.URL.createObjectURL(blob)
       tempLink.setAttribute('download', part.filename)
+      tempLink.click()
+      */
+
+      const tempLink = document.createElement('a')
+      tempLink.href = `data:${part.mimeType};base64,${data}`
+      tempLink.target = '_blank'
       tempLink.click()
     })
     .catch(console.error)
@@ -147,7 +155,7 @@ module.exports = React.createClass({
           <div style={style.downloadBox}>
             <img src='images/11_download.png'
                  style={style.downloadIcon}
-                 onClick={() => this.downloadAttachment(part)} />
+                 onClick={() => this.showAttachment(part)} />
           </div>
         </div>
       )
