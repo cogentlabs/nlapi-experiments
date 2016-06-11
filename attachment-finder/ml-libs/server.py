@@ -7,6 +7,7 @@ from flask import request
 
 import logic
 import utils.nl_api as nl
+from flask import Response
 
 app = Flask(__name__)
 
@@ -27,7 +28,11 @@ def hello():
         return json.dumps(out)
     except Exception, e:
         print(str(e)), e
-    return ret
+
+    resp = Response(ret)
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    resp.headers['Content-Type'] = 'application/json'
+    return resp
 
 
 if __name__ == "__main__":
