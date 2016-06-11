@@ -19,9 +19,9 @@
     "persistent": false
   },
   "oauth2": {
-    "client_id": "337045226723-7pcnpb366250tsa2gb63g1vpj7jr2109.apps.googleusercontent.com",
+    "client_id": "337045226723-fcvn6sudt887m0m3g6aab02hat1jc3tm.apps.googleusercontent.com",
     "scopes": [
-      "https://www.googleapis.com/auth/drive.readonly",
+      "https://www.googleapis.com/auth/gmail.readonly",
       "https://www.googleapis.com/auth/drive.metadata.readonly",
       "https://www.googleapis.com/auth/calendar.readonly"
     ]

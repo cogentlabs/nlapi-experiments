@@ -11,7 +11,7 @@ import SearchResult from './components/SearchResult'
 const style = {
   rootWrapper: {
     padding: 10,
-    width: 340
+    width: 800
   }
 }
 
