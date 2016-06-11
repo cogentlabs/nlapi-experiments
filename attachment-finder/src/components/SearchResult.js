@@ -76,14 +76,22 @@ module.exports = React.createClass({
       .then((messageList) => {
         console.log(messageList)
         if(messageList.resultSizeEstimate == 0) {
+          this.eventEmitter('emit', 'searchingFinished', null)
           this.setState({messages: null})
           return
         }
 
         const messagePromises = messageList.messages.map((message) => getMessage(message.id))
-        Promise.all(messagePromises).then((messages) => { this.setState({messages}) })
+        Promise.all(messagePromises)
+        .then((messages) => {
+          this.setState({messages})
+          this.eventEmitter('emit', 'searchingFinished', null)
+        })
       })
-      .catch(console.error)
+      .catch((err) => {
+        this.eventEmitter('emit', 'searchingFinished', null)
+        console.error(err)
+      })
     })
   },
 

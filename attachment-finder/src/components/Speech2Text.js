@@ -31,6 +31,16 @@ const style = {
     height: 43,
     marginLeft: 42,
     marginRight: 42,
+  },
+
+  loadingBox: {
+    marginTop: 3,
+    marginRight: 42
+  },
+
+  loadingIcon: {
+    width: 38,
+    height: 38,
   }
 }
 
@@ -75,8 +85,19 @@ module.exports = React.createClass({
   getInitialState() {
     return {
       recognitionState: RECOGNITION_STARTED,
-      text: null
+      text: null,
+      isLoading: false
     }
+  },
+
+  componentWillMount() {
+    this.eventEmitter('on', 'searchingFinished', () => {
+      this.setState({isLoading: false})
+    })
+
+    this.eventEmitter('on', 'recognitionFinished', () => {
+      this.setState({isLoading: true})
+    })
   },
 
   componentDidMount() {
@@ -87,11 +108,17 @@ module.exports = React.createClass({
 
   render() {
     const displayText = this.state.text || this.state.recognitionState
+    const loadingIcon = this.state.isLoading
+      ? <object data='images/loading.svg' type="image/svg+xml"></object>
+      : null
 
     return (
       <div style={style.root}>
-        <div style={style.imageBox}><img style={style.wave} src='images/0_speech.png' /></div>
+        <div style={style.imageBox}>
+          <img style={style.wave} src='images/0_speech.png' />
+        </div>
         <div style={style.textBox}>{displayText}</div>
+        <div style={style.loadingBox}>{loadingIcon}</div>
       </div>
     )
   }
