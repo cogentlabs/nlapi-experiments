@@ -3,14 +3,18 @@ import {getToken} from '../common_utils'
 
 module.exports = React.createClass({
   openPermissionRequester() {
-    navigator.webkitGetUserMedia({video: false, audio: true}, (stream) => {}, console.log)
-
-    chrome.windows.create({
-      url: 'permission_requester.html',
-      focused: true,
-      type: 'popup',
-      height: 400,
-      width: 400
+    navigator.webkitGetUserMedia({video: false, audio: true},
+    (stream) => {
+      console.log('Microphone access granted')
+    },
+    () => {
+      chrome.windows.create({
+        url: 'permission_requester.html',
+        focused: true,
+        type: 'popup',
+        height: 400,
+        width: 400
+      })
     })
   },
 
@@ -22,7 +26,7 @@ module.exports = React.createClass({
     .catch(() => {  // not logging in
       getToken(true)
     })
-    // this.openPermissionRequester()
+    this.openPermissionRequester()
   },
 
   render() {
