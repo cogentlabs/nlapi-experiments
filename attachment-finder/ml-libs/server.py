@@ -3,18 +3,17 @@ from __future__ import print_function
 import json
 
 from flask import Flask
+from flask import Response
 from flask import request
 
 import logic
 import utils.nl_api as nl
-from flask import Response
 
 app = Flask(__name__)
 
 
 @app.route("/")
 def hello():
-    ret = 'Hit the endpoint like this http://127.0.0.1:5000?q=TEXT'
     try:
         sentence = str(request.args['q'])
         print('Received text = {}'.format(sentence))
@@ -25,9 +24,9 @@ def hello():
 
         out = {'query': predicted_query,
                'nl_api': nl_api_element}
-        return json.dumps(out)
-    except Exception, e:
-        print(str(e)), e
+        ret = json.dumps(out)
+    except Exception:
+        ret = 'Hit the endpoint like this http://127.0.0.1:5000?q=TEXT'
 
     resp = Response(ret)
     resp.headers['Access-Control-Allow-Origin'] = '*'
