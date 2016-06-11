@@ -68,15 +68,18 @@ module.exports = React.createClass({
 
   componentWillMount() {
     this.eventEmitter('on', 'recognitionFinished', (text) => {
+      let gmailQuery = null
+
       convertNL2Query(text)
       .then((res) => {
         console.log(res)
+        gmailQuery = res.query
         return gmailMessageList(res.query)
       })
       .then((messageList) => {
         console.log(messageList)
         if(messageList.resultSizeEstimate == 0) {
-          this.eventEmitter('emit', 'searchingFinished', null)
+          this.eventEmitter('emit', 'searchingFinished', {query: gmailQuery})
           this.setState({messages: null})
           return
         }
@@ -97,6 +100,8 @@ module.exports = React.createClass({
 
   render() {
     if(_.isNull(this.state.messages)) { return <NoResult /> }
-    return <div>{this.searchResultItems()}</div>
+    return <div>
+      {this.searchResultItems()}
+    </div>
   }
 })
