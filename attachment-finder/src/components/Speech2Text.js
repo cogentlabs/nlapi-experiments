@@ -1,9 +1,6 @@
 import React from 'react'
 import EventEmitterMixin from 'react-event-emitter-mixin'
-
-const RECOGNITION_STARTED = 'Listening...'
-const RECOGNITION_FAILED = 'Failed. Retrying now'
-const RECOGNITION_FINISHED = 'Recognized'
+import {translate} from '../common_utils'
 
 const style = {
   root: {
@@ -31,9 +28,10 @@ const style = {
     height: 43,
     marginLeft: 42,
     marginRight: 42,
+    cursor: 'pointer'
   },
 
-  loadingBox: {
+  optionBox: {
     marginTop: 3,
     marginRight: 42
   },
@@ -44,22 +42,49 @@ const style = {
   }
 }
 
+const labelDict = {
+  en: {
+    initializing: 'initializing...',
+    listening: 'Listening...',
+    failed: 'Failed. Trying again...'
+  },
+  ja: {
+    initializing: '準備中です...',
+    listening: 'お話ください',
+    failed: '聞き取りに失敗しました'
+  }
+}
+
+
+
 module.exports = React.createClass({
   mixins: [EventEmitterMixin],
 
-  recogniztion: null,
+  recognition: null,
+
+  i18nLabel(type) {
+    return labelDict[this.state.inputLanguage][type]
+  },
 
   initRecognition() {
     const recognition = new webkitSpeechRecognition()
-    recognition.lang = 'en';
+    recognition.lang = this.state.inputLanguage
     console.log(recognition)
 
     recognition.onnomatch = () => {
       this.setState({
         text: null,
-        recognitionState: RECOGNITION_FAILED
+        recognitionState: this.i18nLabel('failed')
       })
       this.state.recognition.start()
+    }
+
+    recognition.onstart = () => {
+      this.setState({
+        text: null,
+        recognitionState: this.i18nLabel('listening')
+      })
+      this.eventEmitter('emit', 'recognitionInitiated', null)
     }
 
     recognition.onresult = (event) => {
@@ -69,9 +94,19 @@ module.exports = React.createClass({
         if(result.isFinal) {
           this.setState({
             text,
-            recognitionState: RECOGNITION_FINISHED
+            recognitionState: null
           })
-          this.eventEmitter('emit', 'recognitionFinished', text)
+
+          if(_.isEqual(this.state.inputLanguage, 'en')) {
+            this.eventEmitter('emit', 'recognitionFinished', text)
+          }
+          else {
+            translate(this.state.inputLanguage, 'en', text)
+            .then((translatedText) => {
+              this.eventEmitter('emit', 'recognitionFinished', translatedText)
+            })
+            .catch(console.error)
+          }
         }
         else {
           this.setState({text})
@@ -82,11 +117,40 @@ module.exports = React.createClass({
     return recognition
   },
 
+  switchLanguage() {
+    const newLang = _.isEqual(this.state.inputLanguage, 'en') ? 'ja' : 'en'
+    this.setState({inputLanguage: newLang}, () => {
+      this.startOver()
+    })
+  },
+
+  startOver() {
+    this.recognition.stop()
+    this.recognition = this.initRecognition()
+    this.recognition.start()
+  },
+
+  optionIcon() {
+    if(this.state.isLoading) {
+      return <object data='images/loading.svg' type="image/svg+xml"></object>
+    }
+
+    return <div style={{marginTop: 7}}>
+      <img src='./images/language.png'
+           onClick={this.switchLanguage}
+           style={{cursor: 'pointer'}}
+           width={30} />
+    </div>
+
+    return null
+  },
+
   getInitialState() {
     return {
-      recognitionState: RECOGNITION_STARTED,
+      recognitionState: labelDict.en.initializing,
       text: null,
-      isLoading: false
+      isLoading: false,
+      inputLanguage: 'en'
     }
   },
 
@@ -107,18 +171,17 @@ module.exports = React.createClass({
   },
 
   render() {
-    const displayText = this.state.text || this.state.recognitionState
-    const loadingIcon = this.state.isLoading
-      ? <object data='images/loading.svg' type="image/svg+xml"></object>
-      : null
+    const displayText = this.state.text || <span style={{color: '#eee'}}>{this.state.recognitionState}</span>
 
     return (
       <div style={style.root}>
         <div style={style.imageBox}>
-          <img style={style.wave} src='images/0_speech.png' />
+          <img style={style.wave}
+               onClick={this.startOver}
+               src='images/0_speech.png' />
         </div>
         <div style={style.textBox}>{displayText}</div>
-        <div style={style.loadingBox}>{loadingIcon}</div>
+        <div style={style.optionBox}>{this.optionIcon()}</div>
       </div>
     )
   }

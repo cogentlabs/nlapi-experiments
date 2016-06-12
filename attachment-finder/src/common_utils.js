@@ -1,4 +1,6 @@
 import _ from 'lodash'
+import axios from 'axios'
+import {GOOGLE_API_KEY} from './config'
 import SUPPORTED_MIME_TYPES from './mime_filter'
 
 const MIME_CATEGORIES = {
@@ -37,9 +39,9 @@ const MIME_CATEGORIES = {
   ]
 }
 
+const TRANSLATE_API_ENDPOINT = 'https://www.googleapis.com/language/translate/v2'
+
 module.exports = {
-  QUERY_CONV_URL: 'http://gmail-query-builder.reactive.ai/',
-  // QUERY_CONV_URL: 'http://localhost:5000',
   GMAIL_API_ENDPOINT: 'https://www.googleapis.com/gmail/v1/users',
 
   getToken(interactive=false) {
@@ -75,5 +77,23 @@ module.exports = {
     if(mimeType.match(/^image\//)) { return '5_image.png' }
     if(mimeType.match(/^video\//)) { return '9_video.png' }
     return '10_misterious.png'
+  },
+
+  translate(source, target, q) {
+    return new Promise((resolve, reject) => {
+      axios.get(TRANSLATE_API_ENDPOINT, {
+        params: {
+          key: GOOGLE_API_KEY,
+          source,
+          target,
+          q
+        }
+      })
+      .then((res) => {
+        const text = _.get(res, 'data.data.translations[0].translatedText')
+        _.isUndefined(text) ? reject('No result') : resolve(text)
+      })
+      .catch((res) => { reject(res.data) })
+    })
   }
 }
