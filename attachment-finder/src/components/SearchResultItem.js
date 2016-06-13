@@ -134,7 +134,7 @@ module.exports = React.createClass({
 
   buildCards() {
     const parts = this.state.payload.parts
-    .filter((part) => _.includes(SUPPORTED_MIME_TYPES, part.mimeType))
+    // .filter((part) => _.includes(SUPPORTED_MIME_TYPES, part.mimeType))
     .filter((part) => _.has(part, 'body.attachmentId'))
 
     return parts.map((part) => {

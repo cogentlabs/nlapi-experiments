@@ -77,9 +77,9 @@ module.exports = React.createClass({
 
       convertNL2Query(text)
       .then((res) => {
-        console.log(res)
-        gmailQuery = res.query
-        return gmailMessageList(res.query)
+        gmailQuery = _.trim(res.query)
+        console.log(`actual query : ${gmailQuery}`)
+        return gmailMessageList(gmailQuery)
       })
       .then((messageList) => {
         console.log(messageList)

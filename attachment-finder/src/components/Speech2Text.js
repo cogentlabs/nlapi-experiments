@@ -56,7 +56,6 @@ const labelDict = {
 }
 
 
-
 module.exports = React.createClass({
   mixins: [EventEmitterMixin],
 
@@ -91,6 +90,9 @@ module.exports = React.createClass({
       _.each(event.results, (result) => {
         console.log(result)
         const text = result[0].transcript
+
+        this.setState({text, recognitionState: null})
+
         if(result.isFinal) {
           this.setState({
             text,
@@ -103,13 +105,11 @@ module.exports = React.createClass({
           else {
             translate(this.state.inputLanguage, 'en', text)
             .then((translatedText) => {
+              console.log(`Translated to : ${translatedText}`)
               this.eventEmitter('emit', 'recognitionFinished', translatedText)
             })
             .catch(console.error)
           }
-        }
-        else {
-          this.setState({text})
         }
       })
     }
@@ -150,7 +150,7 @@ module.exports = React.createClass({
       recognitionState: labelDict.en.initializing,
       text: null,
       isLoading: false,
-      inputLanguage: 'en'
+      inputLanguage: 'ja'
     }
   },
 
