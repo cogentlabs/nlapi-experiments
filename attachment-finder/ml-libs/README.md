@@ -1,5 +1,17 @@
 
+##Run the ML-LIBS scripts
 
+```
+export GOOGLE_API_KEY=<key>
+python test.py
+```
+
+Output should look like:
+
+```
+[...]
+FINAL SCORE IS 0.970114942529. MAX is 1. MIN is 0.
+```
 
 ##Dockerized server
 
