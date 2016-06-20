@@ -1,5 +1,5 @@
-from constants import *
 import utils as u
+from constants import *
 
 
 def layer_filter_unique_values(nl_api_elt, query):

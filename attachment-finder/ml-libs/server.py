@@ -16,12 +16,11 @@ app = Flask(__name__)
 def main_endpoint():
     try:
         sentence = str(request.args['q'])
-        print('Received text = {}'.format(sentence))
+        print('Received sentence = {}'.format(sentence))
         nl_api_element = nl.call_nl_api(sentence)
-        print('[NL API] element = {}'.format(nl_api_element))
+        print('NL API element = {}'.format(nl_api_element))
         predicted_query = logic.build_query(nl_api_element)
-        print('[Logic] predicted query = {}'.format(predicted_query))
-
+        print('Output query = {}'.format(predicted_query))
         out = {'query': predicted_query,
                'nl_api': nl_api_element}
         ret = json.dumps(out)

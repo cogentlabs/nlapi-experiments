@@ -3,7 +3,7 @@ import json
 
 import numpy as np
 
-from constants import DEBUG
+from constants import *
 
 
 def validate_query(actual, expected):
@@ -18,8 +18,8 @@ def validate_query(actual, expected):
 
 
 def call_nl_api(text):
-    cmd = 'cd utils; export GOOGLE_API_KEY=AIzaSyBs_VIYtRfZY7nQpjIBSSS9auNVI-Cq1N8; ' \
-          'echo \"{}\" > tmp.txt; node nl.js -f tmp.txt; rm tmp.txt'.format(text)
+    cmd = 'export GOOGLE_API_KEY={}; echo \"{}\" > tmp.txt; ' \
+          'node nl.js -f tmp.txt; rm tmp.txt'.format(GOOGLE_NL_API_KEY, text)
     print('[NL API] Query : {}'.format(cmd))
     out = commands.getstatusoutput(cmd)[1]
     nl_api_json = json.loads(out)
@@ -61,6 +61,6 @@ def extract_relevant_entities(nlapi_elt):
 
 def build(tag, val):
     val = val.lower()
-    if tag is None:  # KEYWORD => tag.
+    if tag is None:
         return ' {}'.format(val)
     return ' {}:{}'.format(tag, val.replace(' ', '-'))
