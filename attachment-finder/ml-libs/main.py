@@ -12,34 +12,33 @@ from constants import *
 
 if __name__ == '__main__':
 
-    dictionary = PyDictionary()
-
     with open(EXPECTED_QUERIES_FILENAME, 'r') as f:
         queries = f.readlines()
         queries = [line.rstrip('\n') for line in queries]
 
+    if not os.path.exists(TMP_DIR):
+        os.makedirs(TMP_DIR)
+
     KEYWORD_SYNONYMS_DICT = dict()
     for keyword in ['send']:
         KEYWORD_SYNONYMS_DICT[keyword] = KEYWORD_SYNONYMS_DICT.get(keyword, [])
-        for synonym in dictionary.synonym(keyword.lower()):
+        for synonym in PyDictionary().synonym(keyword.lower()):
             KEYWORD_SYNONYMS_DICT[keyword].append(synonym)
 
     if USE_PREVIOUS_CALLS_FROM_API and os.path.isfile(TMP_FILENAME):
-        nl_api_elements = p.load(open(TMP_FILENAME, 'r'))
+        nlapi_obj = p.load(open(TMP_FILENAME, 'r'))
     else:
-        nl_api_elements = []
+        nlapi_obj = []
         with open(SENTENCES_FILENAME, 'r') as f:
             sentences = f.readlines()
             sentences = [line.rstrip('\n') for line in sentences]
             for sentence in sentences:
-                nl_api_elements.append(nl.call_nl_api(sentence))
+                nlapi_obj.append(nl.call_nl_api(sentence))
 
-        if not os.path.exists('tmp'):
-            os.makedirs('tmp')
-        p.dump(nl_api_elements, open(TMP_FILENAME, 'w'))
+        p.dump(nlapi_obj, open(TMP_FILENAME, 'w'))
 
     precisions = []
-    for i, nl_api_element in enumerate(nl_api_elements):
+    for i, nl_api_element in enumerate(nlapi_obj):
         print('______________________')
         print('Sentence = {}'.format(nl_api_element['sentences'][0]['text']['content']))
         predicted_query = logic.build_query(nl_api_element)

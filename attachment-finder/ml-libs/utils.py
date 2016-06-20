@@ -44,3 +44,16 @@ def reverse_directed_graph(nl_api_json):
 
     reverse_graph[root_index].remove(root_index)
     return {'reverse_directed_graph': reverse_graph, 'ROOT': root_index}
+
+
+def extract_original_sentence(nlapi_elt):
+    return nlapi_elt['sentences'][0]['text']['content'].lower()
+
+
+def extract_relevant_entities(nlapi_elt):
+    entity_list = []
+    for entity in nlapi_elt['entities']:
+        if entity['salience'] > 0.1:
+            entity_name = entity['name'].lower()
+            entity_list.append(entity_name)
+    return entity_list

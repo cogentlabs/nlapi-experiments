@@ -5,7 +5,8 @@ GLOVE_WORD2VEC_FILENAME = 'data/glove.6B.300d.MINI.txt'
 SENTENCES_FILENAME = 'data/sentences.txt'
 EXPECTED_QUERIES_FILENAME = 'data/expected_queries.txt'
 
-TMP_FILENAME = 'tmp/api_calls.p'
+TMP_DIR = 'tmp'
+TMP_FILENAME = TMP_DIR + '/api_calls.p'
 
 USE_PREVIOUS_CALLS_FROM_API = True
 
