@@ -1,7 +1,6 @@
 from __future__ import print_function
 
 DEBUG = True
-GOOGLE_NL_API_KEY = 'AIzaSyBs_VIYtRfZY7nQpjIBSSS9auNVI-Cq1N8'
 
 # Only for test script, not for the server.
 TEST_SENTENCES_FILENAME = 'data/sentences.txt'

@@ -9,6 +9,9 @@ import logic
 import utils as nl
 from constants import *
 
+# TODO: add this in README.md
+# export GOOGLE_API_KEY=<key>
+# python test.py
 if __name__ == '__main__':
 
     with open(TEST_EXPECTED_QUERIES_FILENAME, 'r') as f:

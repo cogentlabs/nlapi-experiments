@@ -5,3 +5,4 @@ client_secret.json
 .secret
 knowledge-finder/data/*
 attachment-finder/dist/*
+*.pyc

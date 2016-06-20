@@ -1,8 +1,8 @@
-import commands
-import json
+from __future__ import print_function
 
 import numpy as np
-
+import requests as r
+import os
 from constants import *
 
 
@@ -15,15 +15,6 @@ def validate_query(actual, expected):
     if DEBUG:
         print('PRED = {}, EXPECTED = {}, SCORE = {}'.format(actual, expected, score))
     return score
-
-
-def call_nl_api(text):
-    cmd = 'export GOOGLE_API_KEY={}; echo \"{}\" > tmp.txt; ' \
-          'node nl.js -f tmp.txt; rm tmp.txt'.format(GOOGLE_NL_API_KEY, text)
-    print('[NL API] Query : {}'.format(cmd))
-    out = commands.getstatusoutput(cmd)[1]
-    nl_api_json = json.loads(out)
-    return nl_api_json
 
 
 def reverse_directed_graph(nl_api_json):
@@ -64,3 +55,52 @@ def build(tag, val):
     if tag is None:
         return ' {}'.format(val)
     return ' {}:{}'.format(tag, val.replace(' ', '-'))
+
+
+def call_nl_api(text):
+    key = os.environ.get('GOOGLE_API_KEY')
+    if key is None:
+        print('The env variable GOOGLE_API_KEY is not defined.')
+        print('export GOOGLE_API_KEY=<key>')
+        print('Program will exit.')
+        exit(1)
+    entities_json = get_entities(text, key)
+    annotate_text_json = get_annotate_text(text, key)
+    return dict(entities_json.items() + annotate_text_json.items())
+
+
+def get_entities(text, key):
+    url = 'https://language.googleapis.com/v1alpha1/documents:analyzeEntities?key={}'.format(key)
+    data = {
+        'document': {
+            'type': 'PLAIN_TEXT',
+            'content': text,
+        },
+        'encoding_type': 'UTF8',
+    }
+    return trigger_post_query(url, data)
+
+
+def get_annotate_text(text, key):
+    url = 'https://language.googleapis.com/v1alpha1/documents:annotateText?key={}'.format(key)
+    data = {
+        'document': {
+            'type': 'PLAIN_TEXT',
+            'content': text,
+        },
+        'features': {
+            'extractSentences': True,
+            'extractTokens': True,
+            'extractEntities': True,
+            'extractDocumentSentiment': True
+        },
+        'encoding_type': 'UTF8',
+    }
+    return trigger_post_query(url, data)
+
+
+def trigger_post_query(url, data):
+    if DEBUG:
+        print('URL = {}, DATA = {}'.format(url, data))
+    out = r.post(url, json=data)
+    return out.json()
