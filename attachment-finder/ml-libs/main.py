@@ -6,50 +6,41 @@ import pickle as p
 import numpy as np
 from PyDictionary import PyDictionary
 
-import constants as c
 import logic
 import utils.nl_api as nl
+from constants import *
 
 
-def validate_query(actual, expected):
-    precision_list = []
-    for expected_chunk in expected.split():
-        precision_list.append(expected_chunk in actual)
-
-    # penalize it when we go wrong.
-    penalizer_list = []
-    for predicted_chunk in actual.split():
-        penalizer_list.append(predicted_chunk not in expected)
-
-    precision = np.mean(precision_list)
-    penalizer = np.mean(penalizer_list)
-    accuracy = precision - penalizer
-    if accuracy < 0:
-        accuracy = 0
-    print('PRED = {}, EXPECTED = {}, ACC = {}'.format(actual, expected, accuracy))
-    return accuracy
+def validate_query(actual, expected, debug=DEBUG):
+    precision_term = np.mean([(v in actual) for v in expected.split()])
+    regularization_term = np.mean([(v not in expected) for v in actual.split()])
+    score = precision_term - regularization_term
+    if score < 0.0:
+        score = 0.0
+    if debug:
+        print('PRED = {}, EXPECTED = {}, SCORE = {}'.format(actual, expected, score))
+    return score
 
 
 if __name__ == '__main__':
 
     dictionary = PyDictionary()
-    KEYWORDS = ['send']
 
-    with open(c.EXPECTED_QUERIES_FILENAME, 'r') as f:
+    with open(EXPECTED_QUERIES_FILENAME, 'r') as f:
         queries = f.readlines()
         queries = [line.rstrip('\n') for line in queries]
 
     KEYWORD_SYNONYMS_DICT = dict()
-    for keyword in KEYWORDS:
+    for keyword in ['send']:
         KEYWORD_SYNONYMS_DICT[keyword] = KEYWORD_SYNONYMS_DICT.get(keyword, [])
         for synonym in dictionary.synonym(keyword.lower()):
             KEYWORD_SYNONYMS_DICT[keyword].append(synonym)
 
-    if c.USE_PREVIOUS_CALLS_FROM_API and os.path.isfile(c.TMP_FILENAME):
-        nl_api_elements = p.load(open(c.TMP_FILENAME, 'r'))
+    if USE_PREVIOUS_CALLS_FROM_API and os.path.isfile(TMP_FILENAME):
+        nl_api_elements = p.load(open(TMP_FILENAME, 'r'))
     else:
         nl_api_elements = []
-        with open(c.SENTENCES_FILENAME, 'r') as f:
+        with open(SENTENCES_FILENAME, 'r') as f:
             sentences = f.readlines()
             sentences = [line.rstrip('\n') for line in sentences]
             for sentence in sentences:
@@ -57,7 +48,7 @@ if __name__ == '__main__':
 
         if not os.path.exists('tmp'):
             os.makedirs('tmp')
-        p.dump(nl_api_elements, open(c.TMP_FILENAME, 'w'))
+        p.dump(nl_api_elements, open(TMP_FILENAME, 'w'))
 
     precisions = []
     for i, nl_api_element in enumerate(nl_api_elements):
@@ -66,4 +57,10 @@ if __name__ == '__main__':
         predicted_query = logic.build_query(nl_api_element)
         precisions.append(validate_query(predicted_query, queries[i]))
 
-    print('\n______________________\nFINAL PRECISION IS {}'.format(np.mean(precisions)))
+    final_precision = np.mean(precisions)
+    print('\n______________________\nFINAL PRECISION IS {}'.format(final_precision))
+
+    if np.abs(final_precision - 0.97011) > 0.00001:
+        print('FAIL!')
+    else:
+        print('OKAY!')

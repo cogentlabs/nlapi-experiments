@@ -18,6 +18,7 @@ class Extensions:
     def __init__(self):
         pass
 
+DEBUG = True
 
 # look for synonyms as well
 DOCUMENTS_DICTIONARY = {'document': Extensions.DOCUMENT,
