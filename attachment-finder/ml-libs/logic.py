@@ -73,27 +73,21 @@ def layer_add_keywords_send_related(nlapi_elt, res):
 def layer_add_temporal_keywords(nlapi_elt, res):
     sentence = u.extract_original_sentence(nlapi_elt)
     if 'yesterday' in sentence:
-        res += build('newer_than', '1d')
-        return res
+        return res + build('newer_than', '1d')
     for digit in c.DIGITS.keys():
         for time_unit in c.TIME_UNIT.keys():
-            str_to_find = '{} {} ago'.format(digit, time_unit)
-            str_to_find2 = '{} {}s ago'.format(digit, time_unit)
-            if str_to_find in sentence or str_to_find2 in sentence:
+            pattern_1 = '{} {} ago'.format(digit, time_unit)
+            pattern_2 = '{} {}s ago'.format(digit, time_unit)
+            if pattern_1 in sentence or pattern_2 in sentence:
                 time_index = c.DIGITS[digit] * c.TIME_UNIT[time_unit]
-                res += build('newer_than', '{}d'.format(time_index))
-                return res
+                return res + build('newer_than', '{}d'.format(time_index))
     for time_unit in c.TIME_UNIT.keys():
         if 'last {}'.format(time_unit) in sentence:
             time_index = c.TIME_UNIT[time_unit]
-            res += build('newer_than', '{}d'.format(time_index))
-            return res
-    # last night, early morning, late morning, early afternoon and so on
-    day_keywords = ['night', 'afternoon', 'morning', 'evening']
-    for keyword in day_keywords:
+            return res + build('newer_than', '{}d'.format(time_index))
+    for keyword in ['night', 'afternoon', 'morning', 'evening']:
         if keyword in sentence:
-            res += build('newer_than', '1d')
-            return res
+            return res + build('newer_than', '1d')
     return res
 
 
