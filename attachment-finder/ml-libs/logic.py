@@ -1,65 +1,64 @@
 import constants as c
-import utils.nl_api as nl
+import utils as nl
 
 
-def build_query(nl_api_elt):
-    # print json.dumps(nl_api_elt, indent=2, sort_keys=True)
-    result = ''
-    result = layer_entities(nl_api_elt, result)
-    result = layer_add_attachment_tag(result)
-    result = layer_link_entities_to_from(nl_api_elt, result)
-    result = temporal_keywords(nl_api_elt, result)
-    result = layer_send_keyword(nl_api_elt, result)
-    result = keywords_to_label(nl_api_elt, result)
-    result = filter_entities_already_indexed_by_to_from(nl_api_elt, result)
-    return result
+def build_query(nlapi_elt):
+    q = ''
+    q = layer_entities(nlapi_elt, q)
+    q = layer_add_attachment_tag(q)
+    q = layer_link_entities_to_from(nlapi_elt, q)
+    q = temporal_keywords(nlapi_elt, q)
+    q = layer_send_keyword(nlapi_elt, q)
+    q = keywords_to_label(nlapi_elt, q)
+    q = filter_entities_already_indexed_by_to_from(nlapi_elt, q)
+    return q
 
 
-def keywords_to_label(nl_api_elt, res):
-    for token in nl_api_elt['tokens']:
+def keywords_to_label(nlapi_elt, res):
+    for token in nlapi_elt['tokens']:
         if token['lemma'] in c.KEYWORDS:
             res += build(None, token['lemma'])
     return res
 
 
-def pobj_to_label(nl_api_elt, res):
+def pobj_to_label(nlapi_elt, res):
     # NOT USED.
     entities_list = []
-    for entity in nl_api_elt['entities']:
+    for entity in nlapi_elt['entities']:
         if entity['salience'] > 0.1:
             entity_name = entity['name'].lower()
             entities_list.append(entity_name)
-    for token in nl_api_elt['tokens']:
+    for token in nlapi_elt['tokens']:
         if token['partOfSpeech']['tag'] == 'NOUN' and token['dependencyEdge'][None] == 'POBJ':
             if token['lemma'] not in entities_list:
                 res += build(None, token['lemma'])
     return res
 
 
-def layer_send_keyword(nl_api_elt, res):
+def layer_send_keyword(nlapi_elt, res):
     res_before = res
 
     entities_list = []
-    for entity in nl_api_elt['entities']:
+    for entity in nlapi_elt['entities']:
         if entity['salience'] > 0.1:
             entity_name = entity['name'].lower()
             entities_list.append(entity_name)
 
     send_index = None
     for send_synonym in c.SEND_SYNONYMS:
-        for i, token in enumerate(nl_api_elt['tokens']):
+        for i, token in enumerate(nlapi_elt['tokens']):
             if token['lemma'].lower() == send_synonym:
                 send_index = i
                 break
 
     if send_index is not None:
         try:
-            reverse_graph = nl.reverse_directed_graph(nl_api_elt)
+            reverse_graph = nl.reverse_directed_graph(nlapi_elt)
             operands = reverse_graph['reverse_directed_graph'][send_index]
             if len(operands) >= 1:
                 if operands[0] < send_index:
                     # This is the sender.
-                    sender = nl_api_elt['tokens'][operands[0]]['lemma'].lower()
+                    sender = nlapi_elt['tokens'][operands[0]]['lemma'].lower()
                     sender_is_valid = False
                     if sender == 'I'.lower():
                         sender = 'me'
@@ -74,26 +73,26 @@ def layer_send_keyword(nl_api_elt, res):
             if len(operands) >= 2:
                 if operands[1] > send_index:
                     # could be the TO particle.
-                    receiver = nl_api_elt['tokens'][operands[1]]['lemma'].lower()
+                    receiver = nlapi_elt['tokens'][operands[1]]['lemma'].lower()
                     if receiver == 'to'.lower():
-                        receiver = nl_api_elt['tokens'][operands[1] + 1]['lemma']
+                        receiver = nlapi_elt['tokens'][operands[1] + 1]['lemma']
                     if receiver == 'me' or receiver in entities_list:
                         res += build('to', receiver)
         except Exception, e:
             print(str(e))
 
     if send_index is not None:
-        sentence = nl_api_elt['sentences'][0]['text']['content'].lower()
+        sentence = nlapi_elt['sentences'][0]['text']['content'].lower()
         if res_before == res:  # no modifications
-            send_raw_text = nl_api_elt['tokens'][send_index]['text']['content']
+            send_raw_text = nlapi_elt['tokens'][send_index]['text']['content']
             for entity in entities_list:
                 if '{} {}'.format(send_raw_text, entity) in sentence:
                     res += build('to', entity.lower())
     return res
 
 
-def temporal_keywords(nl_api_elt, res):
-    sentence = nl_api_elt['sentences'][0]['text']['content']
+def temporal_keywords(nlapi_elt, res):
+    sentence = nlapi_elt['sentences'][0]['text']['content']
     if 'yesterday' in sentence:
         res += build('newer_than', '1d')
         return res
@@ -124,8 +123,8 @@ def temporal_keywords(nl_api_elt, res):
     return res
 
 
-def filter_entities_already_indexed_by_to_from(nl_api_elt, res):
-    for entity in nl_api_elt['entities']:
+def filter_entities_already_indexed_by_to_from(nlapi_elt, res):
+    for entity in nlapi_elt['entities']:
         if entity['salience'] > 0.1:
             entity_name = entity['name'].lower()
 
@@ -137,9 +136,9 @@ def filter_entities_already_indexed_by_to_from(nl_api_elt, res):
     return res
 
 
-def layer_entities(nl_api_elt, res):
+def layer_entities(nlapi_elt, res):
     tag = None
-    for entity in nl_api_elt['entities']:
+    for entity in nlapi_elt['entities']:
         if entity['salience'] > 0.1:  # and entity['type'] != u'PERSON':
             val = entity['name'].lower()
             res += build(tag, val)
@@ -150,16 +149,16 @@ def layer_add_attachment_tag(res):
     return res + build('has', 'attachment')
 
 
-def layer_link_entities_to_from(nl_api_elt, res):
-    for entity in nl_api_elt['entities']:
+def layer_link_entities_to_from(nlapi_elt, res):
+    for entity in nlapi_elt['entities']:
         if entity['salience'] > 0.1:
             entity_name = entity['name'].lower()
 
             changed = False
-            for token in nl_api_elt['tokens']:
+            for token in nlapi_elt['tokens']:
                 if token['lemma'].lower() == entity_name:
                     hti = token['dependencyEdge']['headTokenIndex']
-                    particle = nl_api_elt['tokens'][hti]['lemma']
+                    particle = nlapi_elt['tokens'][hti]['lemma']
                     if particle == 'from':
                         res += build('from', entity_name)
                     elif particle == 'to':
@@ -168,7 +167,7 @@ def layer_link_entities_to_from(nl_api_elt, res):
                     break
 
             if not changed:  # maybe it's compouned.
-                sentence = nl_api_elt['sentences'][0]['text']['content'].lower()
+                sentence = nlapi_elt['sentences'][0]['text']['content'].lower()
                 if 'from {}'.format(entity_name) in sentence:
                     res += build('from', entity_name)
                 elif 'to {}'.format(entity_name) in sentence:

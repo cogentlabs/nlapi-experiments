@@ -1,7 +1,20 @@
-from __future__ import print_function
-
 import commands
 import json
+
+import numpy as np
+
+from constants import DEBUG
+
+
+def validate_query(actual, expected, debug=DEBUG):
+    precision_term = np.mean([(v in actual) for v in expected.split()])
+    regularization_term = np.mean([(v not in expected) for v in actual.split()])
+    score = precision_term - regularization_term
+    if score < 0.0:
+        score = 0.0
+    if debug:
+        print('PRED = {}, EXPECTED = {}, SCORE = {}'.format(actual, expected, score))
+    return score
 
 
 def call_nl_api(text):

@@ -7,20 +7,8 @@ import numpy as np
 from PyDictionary import PyDictionary
 
 import logic
-import utils.nl_api as nl
+import utils as nl
 from constants import *
-
-
-def validate_query(actual, expected, debug=DEBUG):
-    precision_term = np.mean([(v in actual) for v in expected.split()])
-    regularization_term = np.mean([(v not in expected) for v in actual.split()])
-    score = precision_term - regularization_term
-    if score < 0.0:
-        score = 0.0
-    if debug:
-        print('PRED = {}, EXPECTED = {}, SCORE = {}'.format(actual, expected, score))
-    return score
-
 
 if __name__ == '__main__':
 
@@ -55,7 +43,7 @@ if __name__ == '__main__':
         print('______________________')
         print('Sentence = {}'.format(nl_api_element['sentences'][0]['text']['content']))
         predicted_query = logic.build_query(nl_api_element)
-        precisions.append(validate_query(predicted_query, queries[i]))
+        precisions.append(nl.validate_query(predicted_query, queries[i]))
 
     final_precision = np.mean(precisions)
     print('\n______________________\nFINAL PRECISION IS {}'.format(final_precision))
