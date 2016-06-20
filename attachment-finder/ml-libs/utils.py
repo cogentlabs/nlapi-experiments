@@ -57,3 +57,10 @@ def extract_relevant_entities(nlapi_elt):
             entity_name = entity['name'].lower()
             entity_list.append(entity_name)
     return entity_list
+
+
+def build(tag, val):
+    val = val.lower()
+    if tag is None:  # KEYWORD => tag.
+        return ' {}'.format(val)
+    return ' {}:{}'.format(tag, val.replace(' ', '-'))
