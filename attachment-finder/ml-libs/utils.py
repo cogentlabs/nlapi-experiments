@@ -6,13 +6,13 @@ import numpy as np
 from constants import DEBUG
 
 
-def validate_query(actual, expected, debug=DEBUG):
+def validate_query(actual, expected):
     precision_term = np.mean([(v in actual) for v in expected.split()])
     regularization_term = np.mean([(v not in expected) for v in actual.split()])
     score = precision_term - regularization_term
     if score < 0.0:
         score = 0.0
-    if debug:
+    if DEBUG:
         print('PRED = {}, EXPECTED = {}, SCORE = {}'.format(actual, expected, score))
     return score
 
