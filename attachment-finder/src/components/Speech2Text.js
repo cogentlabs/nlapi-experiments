@@ -150,7 +150,7 @@ module.exports = React.createClass({
       recognitionState: labelDict.en.initializing,
       text: null,
       isLoading: false,
-      inputLanguage: 'ja'
+      inputLanguage: 'en'
     }
   },
 
