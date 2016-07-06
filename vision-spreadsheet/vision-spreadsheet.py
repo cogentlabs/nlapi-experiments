@@ -46,7 +46,8 @@ def get_credentials():
 def upload_csv(service, filepath, name):
     metadata = {
         'name': name,
-        'mimeType': 'application/vnd.google-apps.spreadsheet'
+        'mimeType': 'text/csv'
+        #'mimeType': 'application/vnd.google-apps.spreadsheet'
         }
     media = MediaFileUpload(filepath,
                             mimetype='text/csv',
