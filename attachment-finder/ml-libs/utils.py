@@ -64,9 +64,8 @@ def call_nl_api(text):
         print('export GOOGLE_API_KEY=<key>')
         print('Program will exit.')
         exit(1)
-    entities_json = get_entities(text, key)
     annotate_text_json = get_annotate_text(text, key)
-    return dict(entities_json.items() + annotate_text_json.items())
+    return dict(annotate_text_json.items())
 
 
 def get_entities(text, key):
@@ -89,8 +88,7 @@ def get_annotate_text(text, key):
             'content': text,
         },
         'features': {
-            'extractSentences': True,
-            'extractTokens': True,
+            'extractSyntax': True,
             'extractEntities': True,
             'extractDocumentSentiment': True
         },
