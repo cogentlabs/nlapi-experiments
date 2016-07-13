@@ -34,10 +34,11 @@ If you have a problem in Chrome-login, please see https://developer.chrome.com/a
 
 #### Good to go?
 
-Since the NL API is still in alpha, some breaking change may occur. In that case, some files under `ml-libs`. Anyway,
+Since the NL API is still in alpha, some breaking change may occur. In that case, some files under `ml-libs`. Anyway, you should be able to click on the extension on Chrome, and say whatever you're looking for. Some email having attachment should be listed.
 
 
 ### APIs used
 - Google Natural Language API (alpha)
 - Google Web Speech API
 - Google Translate API
+- Google Gmail API
