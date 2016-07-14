@@ -13,7 +13,7 @@ You need to have a Google Platform API key of a Natural Language / Translate API
 
 ```
 attachment-finder/ml-libs
-export GOOGLE_API_KEYS=XXX
+export GOOGLE_API_KEY=XXX
 pip install
 python server.py
 ```
@@ -24,7 +24,7 @@ Then the server should be running at http://localhost:5000
 #### Chrome extension
 ```
 cd attachment-finder
-vi src/config.js    # modify GOOGLE_API_KEYS
+vi src/config.js    # modify GOOGLE_API_KEY
 npm i
 gulp
 ```
@@ -36,7 +36,7 @@ If you have a problem in Chrome-login, please see https://developer.chrome.com/a
 
 #### Good to go?
 
-Since the NL API is still in alpha, some breaking change may occur. In that case, some files under `ml-libs`. Anyway,
+Since the NL API is still in alpha, some breaking change may occur. In that case, some files under `ml-libs` needs to be modified.
 
 
 ### APIs used
