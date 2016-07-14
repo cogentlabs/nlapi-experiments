@@ -35,7 +35,7 @@ If you have a problem in Chrome-login, please see https://developer.chrome.com/a
 
 
 #### Good to go?
-Since the NL API is still in alpha, some breaking change may occur. In that case, some files under `ml-libs`. Anyway, you should be able to click on the extension on Chrome, and say whatever you're looking for. Some email having attachment should be listed.
+Since the NL API is still in alpha, some breaking change may occur. In that case, some files under `ml-libs`. Anyway, if everything goes well, you should be able see your attachments in your gmail by saying like `List all the attachment I sent to Google yesterday`, on the Chrome extension.
 
 
 ### APIs used
