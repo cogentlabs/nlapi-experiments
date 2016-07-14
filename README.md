@@ -9,9 +9,11 @@ There are two parts. The chrome extension and NL-processing server.
 
 
 #### NL Processing server
+You need to have a Google Platform API key of a Natural Language / Translate API enabled project.
+
 ```
 attachment-finder/ml-libs
-export GOOGLE_API_KEYS=XXX
+export GOOGLE_API_KEY=XXX
 pip install
 python server.py
 ```
@@ -22,8 +24,8 @@ Then the server should be running at http://localhost:5000
 #### Chrome extension
 ```
 cd attachment-finder
-vi src/config.js    # modify GOOGLE_API_KEYS
-npm i
+vi src/config.js    # modify GOOGLE_API_KEY
+npm install
 gulp
 ```
 
@@ -33,7 +35,6 @@ If you have a problem in Chrome-login, please see https://developer.chrome.com/a
 
 
 #### Good to go?
-
 Since the NL API is still in alpha, some breaking change may occur. In that case, some files under `ml-libs`. Anyway, you should be able to click on the extension on Chrome, and say whatever you're looking for. Some email having attachment should be listed.
 
 
