@@ -9,6 +9,8 @@ There are two parts. The chrome extension and NL-processing server.
 
 
 #### NL Processing server
+You need to have a Google Platform API key of a Natural Language / Translate API enabled project.
+
 ```
 attachment-finder/ml-libs
 export GOOGLE_API_KEYS=XXX
